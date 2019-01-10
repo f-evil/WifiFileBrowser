@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="jquery-1.7.2.min.js" type="text/javascript"></script>
+
+    <title>文档的标题</title>
+    <script type="text/javascript">
+        var pic = ''
+        var $imgg ;
+
+        $(function(){
+            $imgg = $("#iii");
+            var now = new Date();
+            var url = 'files' + '?' + now.getTime();
+            $.getJSON(url, function(data) {
+                showNexDoc(data);
+            });
+        });
+
+        function showNexDoc(data){
+            console.log(data);
+            pic=data;
+            $('ul li').remove();
+
+            for(var i = 0; i < data.length; i++){
+
+                var $li = $('<li><div onclick="getNextDoc('+i+')">'+ data[i].name +'</div><input type="checkbox" name="choose" value="' + i + '"/></li>');
+                $("#filelist").append($li);
+            }
+        }
+
+        function getNextDoc(data){
+
+             var dir=pic[data].dir
+
+             if(dir==0){
+
+                var x1=pic[data].path.toLowerCase();
+
+                if(x1.endWith("jpg")||x1.endWith("jpeg")||x1.endWith("png")){
+                        var p = "/files/" + pic[data].path;
+                        $imgg.attr("src", p);
+                }
+
+                if(x1.endWith("mp4")||x1.endWith("mp3")){
+                        var p = "/files/" + pic[data].path;
+
+                        document.getElementById("v1").src=p;;
+                        document.getElementById("videoplayer").load();
+                        document.getElementById("videoplayer").play();
+
+                }
+
+
+                return ;
+             }
+
+             var urlNext='/nextDoc/' + pic[data].path;
+             $.getJSON(urlNext,function(data1){
+                showNexDoc(data1);
+             });
+        }
+
+        String.prototype.endWith=function(s){
+            if(s==null||s==""||this.length==0||s.length>this.length)
+                return false;
+            if(this.substring(this.length-s.length)==s)
+                return true;
+            else
+                return false;
+            return true;
+        }
+
+        function download(){
+            let obj = document.getElementsByName('choose');
+            var total=0;
+            if(obj){
+                var files='';
+                for(let x in obj){
+                    if(obj[x].checked){
+                        total=total+1;
+                        files=files+pic[x].path+',';
+                    }
+                }
+                if(parseInt(total) == 0){
+                    alert("请先选择要下载的照片!");
+                    return ;
+                }else{
+                    var url='/download/' + files;
+                        $.getJSON(url,function(data){
+                            for (var i = 0; i < data.length; i++) {
+                                window.open("/files/" + data[i].name);
+                            }
+                        });
+                }
+            }else{
+                alert("选中状态获取失败!");
+            }
+        }
+        function selectAll(){
+            $("input[type='checkbox']").each(function(){
+                $(this).attr("checked",true);
+            });
+        }
+        function selectNone(){
+            $("input[type='checkbox']").each(function(){
+                $(this).attr("checked",false);
+            });
+        }
+
+    </script>
+</head>
+
+<body>
+<ul id="filelist" style="float:left;"></ul>
+<div>
+    <button onclick="selectAll()">全选</button>
+    <button onclick="selectNone()">全不选</button>
+    <button onclick="download()">批量下载</button>
+</div>
+<div id="divPiao" style=" position: fixed; left:800px; top:200px;">
+    <img id="iii" style="width:300px;marginLeft:100px;"/>
+    <video id="videoplayer" style="width:300px;marginLeft:100px;" controls="controls">
+        <source id="v1" src="">
+    </video>
+
+</div>
+</body>
+
+</html>

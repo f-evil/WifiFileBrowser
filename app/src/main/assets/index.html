@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="jquery-1.7.2.min.js" type="text/javascript"></script>
+    <title>文档的标题</title>
+    <script type="text/javascript">
+        var pic = [];
+        $(function() {
+            var now = new Date();
+            var url = 'files?' + now.getTime();
+            $.getJSON(url, function(data) {
+                pic = data;
+                for (var i = 0; i < data.length; i++) {
+                    var $li = $('<li><img src="/files/'+ data[i].name +'"/><input type="checkbox" name="choose" value="' + i + '"/></li>');
+                    $("#filelist").append($li);
+                }
+
+                $("input[type='checkbox']").each(function(){
+                $(this).attr("checked",false);
+            });
+
+            })
+        });
+        function download(){
+            let obj = document.getElementsByName('choose');
+            var total=0;
+            if(obj){
+                var files='';
+                for(let x in obj){
+                    if(obj[x].checked){
+                        total=total+1;
+                        <!--let path = "/files/" + pic[x].path-->
+                        files=files+pic[x].path+',';
+                    }
+                }
+                if(parseInt(total) == 0){
+                    alert("请先选择要下载的照片!");
+                    return ;
+                }else{
+                    var url='/downloadss/' + files;
+
+                        $.getJSON(url,function(data){
+                            console.log(data)
+                            for (var i = 0; i < data.length; i++) {
+                                window.open("/files/" + data[i].name);
+                            }
+                        });
+                }
+            }else{
+                alert("选中状态获取失败!");
+            }
+        }
+        function selectAll(){
+            $("input[type='checkbox']").each(function(){
+                $(this).attr("checked",true);
+            });
+        }
+
+    </script>
+    <style>
+        body{
+            margin: 0px;
+        }
+        ul{
+            padding: 0;
+            margin: 0;
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        li{
+            width: calc(20% - 40px);
+            min-width: 320px;
+            height: 400px;
+            margin: 20px 20px 0px 20px;
+            display: flex;
+            /*flex: auto;*/
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        img{
+            width: 200px;
+            <!--height: 300px;-->
+        }
+        input{
+            margin-top: 20px;
+            width: 20px;
+            height: 20px;
+        }
+        div{
+            width: 100%;
+            display: flex;
+            margin: 20px 0px;
+            justify-content: center;
+        }
+        button{
+            width: 200px;
+            height: 40px;
+        }
+
+
+    </style>
+</head>
+<body>
+<ul id="filelist"></ul>
+<div>
+    <button onclick="selectAll()">全选</button>
+    <button onclick="download()">批量下载</button>
+</div>
+</body>
+</html>
