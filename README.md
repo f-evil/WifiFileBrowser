@@ -1,5 +1,8 @@
 # WifiFileBrowser
 Android手机Web文件浏览器
+
+# 原文: [http://www.nooocat.com/index.php/2019/01/10/188/](http://www.nooocat.com/index.php/2019/01/10/188/ "Web文件浏览器"). 
+
 # ![avatar](http://www.nooocat.com/wp-content/uploads/2019/01/Screenshot_2019-01-10-14-56-29-642_com.juntuo.wififilebrowser-169x300.png)
 
 <body>
